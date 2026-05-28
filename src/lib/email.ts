@@ -4,7 +4,7 @@ import { toZonedTime } from "date-fns-tz";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const DOCTOR_EMAIL = "consultdrhuddar@gmail.com";
-const FROM_EMAIL   = "Sukhibhava Healthcare <appointments@doctorhuddar.com>";
+const FROM_EMAIL = "Sukhibhava Healthcare <appointments@doctorhuddar.com>";
 const TZ = "Asia/Kolkata";
 
 function formatIST(isoStr: string) {
