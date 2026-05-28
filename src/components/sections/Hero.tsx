@@ -32,10 +32,10 @@ export default function Hero() {
         {/* CTAs */}
         <div className="flex flex-wrap gap-4 animate-fade-up stagger-4">
           <Link
-            href="/services#contact"
-            className="bg-ink text-paper px-6 py-3 rounded-full text-sm font-medium hover:bg-ink-soft transition-colors"
+            href="/book"
+            className="bg-accent text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-accent-dark transition-colors"
           >
-            Book an appointment
+            Book Online Consultation
           </Link>
           <Link
             href="/services"

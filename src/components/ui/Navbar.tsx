@@ -36,7 +36,7 @@ export default function Navbar() {
           ))}
           <li>
             <Link
-              href="/services#contact"
+              href="/book"
               className="text-sm bg-accent text-white px-4 py-1.5 rounded-full hover:bg-accent-dark transition-colors"
             >
               Book appointment
@@ -86,7 +86,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/services#contact"
+            href="/book"
             className="text-sm bg-accent text-white px-4 py-2 rounded-full text-center"
             onClick={() => setOpen(false)}
           >
