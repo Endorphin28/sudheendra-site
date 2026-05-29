@@ -1,7 +1,21 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import GalleryLightbox from "@/components/ui/GalleryLightbox";
 import type { MediaItem } from "@/components/ui/GalleryLightbox";
+
+export const metadata: Metadata = {
+  title: "Services | Psychiatry & De-Addiction Centre, Hubballi",
+  description:
+    "Outpatient psychiatry, 24/7 inpatient care, and exclusive de-addiction services at Sukhibhava Healthcare & Parivartan-VGH in Hubballi, Karnataka. OPD Mon–Sat, 11am–8pm.",
+  alternates: { canonical: "https://doctorhuddar.com/services" },
+  openGraph: {
+    title: "Clinical Services | Dr. Sudheendra Huddar, Hubballi",
+    description:
+      "Psychiatry OPD, 24/7 inpatient care, ECT, Ketamine infusion, and de-addiction treatment at Sukhibhava Healthcare, Hubballi.",
+    url: "https://doctorhuddar.com/services",
+  },
+};
 
 // ── Galleries ─────────────────────────────────────────────────────────────────
 
@@ -75,10 +89,10 @@ export default function ServicesPage() {
 
         {/* Header */}
         <div className="mb-20">
-          <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-4">Services</p>
-          <h1 className="font-display text-5xl md:text-6xl text-ink mb-6">Clinical Services</h1>
+          <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-4">Clinical Services · Hubballi, Karnataka</p>
+          <h1 className="font-display text-5xl md:text-6xl text-ink mb-6">Psychiatry & De-Addiction Services, Hubballi</h1>
           <p className="text-lg text-ink-muted max-w-xl leading-relaxed">
-            Outpatient, inpatient, and de-addiction services across three facilities in Hubballi, Karnataka.
+            Outpatient, inpatient, and exclusive de-addiction services across three facilities in Hubballi, Karnataka.
           </p>
         </div>
 

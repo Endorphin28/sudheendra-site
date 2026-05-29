@@ -1,7 +1,21 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import Link from "next/link";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "About Dr. Sudheendra Huddar | Psychiatrist, Hubballi",
+  description:
+    "Dr. Sudheendra Huddar — Consultant Psychiatrist and De-Addiction Specialist in Hubballi. First DM Addiction Psychiatry super-specialist from Karnataka. Trained at NIMHANS & AIIMS Delhi.",
+  alternates: { canonical: "https://doctorhuddar.com/about" },
+  openGraph: {
+    title: "About Dr. Sudheendra Huddar | Psychiatrist, Hubballi",
+    description:
+      "Consultant Psychiatrist trained at NIMHANS Bengaluru and AIIMS Delhi. First psychiatry super-specialist in Addiction Psychiatry from Karnataka.",
+    url: "https://doctorhuddar.com/about",
+  },
+};
 
 const qualifications = [
   { degree: "MBBS", institution: "BIMS Belagavi, RGUHS" },
