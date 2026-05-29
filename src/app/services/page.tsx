@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import GalleryLightbox from "@/components/ui/GalleryLightbox";
@@ -157,6 +158,16 @@ export default function ServicesPage() {
               </ul>
             </div>
           </div>
+
+          {/* Book CTA */}
+          <div className="mt-10 flex flex-wrap gap-4">
+            <Link href="/book" className="bg-accent text-white text-sm px-6 py-3 rounded-full hover:bg-accent-dark transition-colors font-medium">
+              Book Online Consultation — ₹700 →
+            </Link>
+            <a href="tel:+918073398651" className="border border-ink-muted text-ink-soft text-sm px-6 py-3 rounded-full hover:border-ink hover:text-ink transition-colors">
+              Call 80733 98651
+            </a>
+          </div>
         </section>
 
         <div className="border-t border-paper-warm mb-24" />
@@ -184,6 +195,13 @@ export default function ServicesPage() {
               </li>
             ))}
           </ul>
+
+          {/* Book CTA */}
+          <div className="mt-8">
+            <a href="tel:+918073398651" className="inline-flex items-center gap-2 bg-accent text-white text-sm px-6 py-3 rounded-full hover:bg-accent-dark transition-colors font-medium">
+              Call for Admission Enquiry →
+            </a>
+          </div>
         </section>
 
         <div className="border-t border-paper-warm mb-24" />
@@ -206,6 +224,13 @@ export default function ServicesPage() {
             <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">In collaboration with</p>
             <p className="text-sm font-medium text-ink">Vivekananda General Hospital</p>
             <p className="text-xs text-ink-muted mt-0.5">Hubballi, Karnataka</p>
+          </div>
+
+          {/* Book CTA */}
+          <div className="mt-8">
+            <a href="tel:+918073398651" className="inline-flex items-center gap-2 bg-accent text-white text-sm px-6 py-3 rounded-full hover:bg-accent-dark transition-colors font-medium">
+              Enquire about De-addiction Admission →
+            </a>
           </div>
         </section>
 
