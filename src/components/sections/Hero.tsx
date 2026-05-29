@@ -49,7 +49,7 @@ export default function Hero() {
                 href="/book"
                 className="bg-accent text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-accent-dark transition-colors"
               >
-                Book Online — ₹700
+                Book Online — ₹1,200
               </Link>
               <a
                 href="https://wa.me/918073398651"
@@ -93,7 +93,8 @@ export default function Hero() {
                 alt="Dr. Sudheendra Huddar — Consultant Psychiatrist, Hubballi"
                 fill
                 sizes="(max-width: 768px) 0vw, 50vw"
-                className="object-cover object-top"
+                className="object-cover"
+                style={{ objectPosition: "50% 8%" }}
                 priority
               />
             </div>
@@ -106,7 +107,7 @@ export default function Hero() {
               </div>
               <div>
                 <p className="text-sm font-medium text-ink">Online consultations available</p>
-                <p className="text-xs text-ink-muted">Mon, Wed & Fri · ₹700 · 30 min · Google Meet</p>
+                <p className="text-xs text-ink-muted">Mon, Wed & Fri · ₹1,200 · 30 min · Google Meet</p>
               </div>
             </div>
           </div>

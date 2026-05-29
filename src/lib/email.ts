@@ -40,7 +40,7 @@ export async function sendPatientConfirmation(params: {
             <p style="margin:0 0 8px"><strong>📅 Date & Time</strong><br>${slotDisplay}</p>
             <p style="margin:8px 0"><strong>⏱ Duration</strong><br>30 minutes</p>
             <p style="margin:8px 0"><strong>💻 Type</strong><br>Online Consultation (Google Meet)</p>
-            <p style="margin:8px 0 0"><strong>💰 Amount Paid</strong><br>₹700</p>
+            <p style="margin:8px 0 0"><strong>💰 Amount Paid</strong><br>₹1,200</p>
           </div>
 
           <div style="background:#2d6a4f;border-radius:8px;padding:20px;margin:24px 0;text-align:center">
@@ -103,7 +103,7 @@ export async function sendDoctorNotification(params: {
             <tr><td style="padding:8px 0;color:#6b6a65">Phone</td><td style="padding:8px 0;font-weight:600">${patientPhone}</td></tr>
             <tr><td style="padding:8px 0;color:#6b6a65">Email</td><td style="padding:8px 0">${patientEmail}</td></tr>
             <tr><td style="padding:8px 0;color:#6b6a65">Slot</td><td style="padding:8px 0;font-weight:600">${slotDisplay}</td></tr>
-            <tr><td style="padding:8px 0;color:#6b6a65">Amount</td><td style="padding:8px 0">₹700 (paid)</td></tr>
+            <tr><td style="padding:8px 0;color:#6b6a65">Amount</td><td style="padding:8px 0">₹1,200 (paid)</td></tr>
             <tr><td style="padding:8px 0;color:#6b6a65">Booking ID</td><td style="padding:8px 0;font-size:12px;color:#9c9b95">${bookingId}</td></tr>
           </table>
           <div style="margin-top:20px">

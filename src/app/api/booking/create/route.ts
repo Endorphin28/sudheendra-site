@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     // Create Razorpay order
     const order = await razorpay.orders.create({
-      amount:   70000, // ₹700 in paise
+      amount:   120000, // ₹1200 in paise
       currency: "INR",
       notes: {
         patientName,
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
         appointment_type: "Online Consultation",
         slot_start:       slotStart,
         slot_end:         slotEnd,
-        amount:           700,
+        amount:           1200,
         payment_status:   "pending",
         booking_status:   "pending",
         razorpay_order_id: order.id,
