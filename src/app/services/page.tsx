@@ -167,12 +167,19 @@ export default function ServicesPage() {
           </div>
 
           {/* Info strip */}
-          <div className="grid sm:grid-cols-3 gap-4 mb-8 p-6 rounded-2xl bg-paper-white border border-paper-warm">
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8 p-6 rounded-2xl bg-paper-white border border-paper-warm">
             <div>
               <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">OPD Timings</p>
               <p className="text-sm text-ink font-semibold">11am – 2pm</p>
               <p className="text-sm text-ink font-semibold">3pm – 8pm</p>
               <p className="text-xs text-ink-muted mt-1">Monday to Saturday</p>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">Consultation Fees</p>
+              <p className="text-sm text-ink">First visit — <span className="font-semibold text-accent">₹850</span></p>
+              <p className="text-sm text-ink">Follow-up — <span className="font-semibold text-accent">₹500</span></p>
+              <p className="text-sm text-ink">Counselling — <span className="font-semibold text-accent">₹1,500</span></p>
+              <p className="text-xs text-ink-muted mt-0.5">Online — ₹1,200 / 30 min</p>
             </div>
             <div>
               <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">Contact</p>
@@ -182,10 +189,14 @@ export default function ServicesPage() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">Address</p>
-              <p className="text-sm text-ink leading-relaxed">
+              <p className="text-sm text-ink leading-relaxed mb-2">
                 #17, 18, Ground Floor, Ramdhoot Apartment Complex,
                 Opp. Sawai Gandharva Hall, Deshpande Nagar, Hubballi – 580029
               </p>
+              <a href="https://share.google/ozC7F3JAP8iYPZ8G5" target="_blank" rel="noopener noreferrer"
+                className="text-xs text-accent font-medium hover:underline flex items-center gap-1">
+                📍 Get Directions
+              </a>
             </div>
           </div>
 

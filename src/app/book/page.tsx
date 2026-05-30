@@ -234,7 +234,11 @@ export default function BookPage() {
                   </svg>
                 </div>
                 <h2 className="font-display text-xl text-ink mb-1">In-person Consultation</h2>
-                <p className="text-xs text-accent font-medium mb-2">Visit the clinic directly</p>
+                <div className="space-y-0.5 mb-3">
+                  <p className="text-xs text-accent font-medium">First visit — ₹850</p>
+                  <p className="text-xs text-accent font-medium">Follow-up — ₹500</p>
+                  <p className="text-xs text-accent font-medium">Counselling — ₹1,500 (45 min)</p>
+                </div>
                 <p className="text-sm text-ink-muted">Walk in during OPD hours or call us to check availability.</p>
                 <p className="mt-4 text-xs text-accent font-medium">Mon–Sat, 11am–2pm & 3pm–8pm →</p>
               </button>
@@ -256,9 +260,27 @@ export default function BookPage() {
                   <p className="text-sm font-medium text-ink">Monday to Saturday</p>
                   <p className="text-sm text-ink-muted">11:00 AM – 2:00 PM  &  3:00 PM – 8:00 PM</p>
                 </div>
+                <div className="bg-paper rounded-xl border border-paper-warm p-4 space-y-3">
+                  <p className="text-xs uppercase tracking-widest text-ink-faint">Consultation Fees</p>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-paper-white rounded-lg p-2">
+                      <p className="text-xs text-ink-muted">First visit</p>
+                      <p className="font-display text-lg text-accent">₹850</p>
+                    </div>
+                    <div className="bg-paper-white rounded-lg p-2">
+                      <p className="text-xs text-ink-muted">Follow-up</p>
+                      <p className="font-display text-lg text-accent">₹500</p>
+                    </div>
+                    <div className="bg-paper-white rounded-lg p-2">
+                      <p className="text-xs text-ink-muted">Counselling</p>
+                      <p className="font-display text-lg text-accent">₹1,500</p>
+                    </div>
+                  </div>
+                </div>
                 <div className="bg-paper rounded-xl border border-paper-warm p-4">
                   <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">Address</p>
-                  <p className="text-sm text-ink leading-relaxed">#17, 18, Ground Floor, Ramdhoot Apartment Complex, Opp. Sawai Gandharva Hall, Deshpande Nagar, Hubballi – 580029</p>
+                  <p className="text-sm text-ink leading-relaxed mb-3">#17, 18, Ground Floor, Ramdhoot Apartment Complex, Opp. Sawai Gandharva Hall, Deshpande Nagar, Hubballi – 580029</p>
+                  <a href="https://share.google/ozC7F3JAP8iYPZ8G5" target="_blank" rel="noopener noreferrer" className="text-sm text-accent font-medium hover:underline flex items-center gap-1">📍 Get Directions on Google Maps</a>
                 </div>
                 <p className="text-sm text-ink-muted text-center">Contact us to confirm availability before visiting</p>
                 <div className="grid grid-cols-2 gap-3">

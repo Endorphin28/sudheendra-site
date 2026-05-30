@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+const MAPS_URL = "https://share.google/ozC7F3JAP8iYPZ8G5";
+
 export default function ClinicPreview() {
   return (
     <section className="py-20 px-6">
@@ -29,16 +31,51 @@ export default function ClinicPreview() {
               </div>
             </div>
 
-            {/* Address */}
+            {/* Consultation Fees */}
+            <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
+              <p className="text-xs uppercase tracking-widest text-ink-faint mb-4">Consultation Fees</p>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-ink">First Consultation</span>
+                  <span className="font-display text-lg text-accent">₹850</span>
+                </div>
+                <div className="flex justify-between items-center border-t border-paper-warm pt-3">
+                  <span className="text-sm text-ink">Follow-up</span>
+                  <span className="font-display text-lg text-accent">₹500</span>
+                </div>
+                <div className="flex justify-between items-center border-t border-paper-warm pt-3">
+                  <span className="text-sm text-ink">Counselling <span className="text-ink-muted text-xs">(45 min)</span></span>
+                  <span className="font-display text-lg text-accent">₹1,500</span>
+                </div>
+                <div className="flex justify-between items-center border-t border-paper-warm pt-3">
+                  <span className="text-sm text-ink">Online Consultation <span className="text-ink-muted text-xs">(30 min)</span></span>
+                  <span className="font-display text-lg text-accent">₹1,200</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Address + Maps */}
             <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
               <p className="text-xs uppercase tracking-widest text-ink-faint mb-3">Address</p>
-              <p className="text-ink font-medium leading-relaxed">
+              <p className="text-ink font-medium leading-relaxed mb-4">
                 #17 & 18, Ground Floor,<br />
                 Ramdhoot Apartment Complex,<br />
                 Opposite Sawai Gandharva Hall,<br />
                 Deshpande Nagar, Hubballi – 580029<br />
                 Karnataka
               </p>
+              <a
+                href={MAPS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-accent font-medium hover:underline"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#2d6a4f" strokeWidth="2"/>
+                  <circle cx="12" cy="9" r="2.5" stroke="#2d6a4f" strokeWidth="2"/>
+                </svg>
+                Get Directions on Google Maps
+              </a>
             </div>
 
             {/* Contact */}
@@ -59,10 +96,7 @@ export default function ClinicPreview() {
 
             {/* CTAs */}
             <div className="flex flex-wrap gap-3">
-              <Link
-                href="/book"
-                className="bg-accent text-white text-sm px-6 py-3 rounded-full font-medium hover:bg-accent-dark transition-colors"
-              >
+              <Link href="/book" className="bg-accent text-white text-sm px-6 py-3 rounded-full font-medium hover:bg-accent-dark transition-colors">
                 Book Appointment →
               </Link>
               <a

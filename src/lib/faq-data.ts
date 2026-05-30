@@ -28,6 +28,10 @@ export const faqs = [
     a: "Yes. Family counselling and guidance sessions are available. Dr. Huddar can advise families on how to approach and support a patient who is reluctant to seek help.",
   },
   {
+    q: "What are the consultation fees?",
+    a: "In-person fees at Sukhibhava Healthcare: First consultation — ₹850, Follow-up — ₹500, Counselling (45 min) — ₹1,500. Online consultation — ₹1,200 for 30 minutes.",
+  },
+  {
     q: "What are your OPD timings?",
     a: "Monday to Saturday, 11am–2pm and 3pm–8pm at Sukhibhava Healthcare, Deshpande Nagar, Hubballi. Online consultations are available Monday, Wednesday and Friday.",
   },
