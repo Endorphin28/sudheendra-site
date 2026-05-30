@@ -114,17 +114,13 @@ export default function Hero() {
                 priority
               />
             </div>
-            {/* Trust card */}
-            <div className="bg-paper-white border border-paper-warm rounded-xl px-5 py-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-ink">Online consultations available</p>
-                <p className="text-xs text-ink-muted">Mon, Wed & Fri · ₹1,200 · 30 min · Google Meet</p>
-              </div>
+            {/* Name & credentials card */}
+            <div className="bg-paper-white border border-paper-warm rounded-xl px-5 py-4">
+              <p className="font-display text-lg text-ink tracking-tight">Dr. Sudheendra Huddar</p>
+              <p className="text-xs text-accent font-medium mt-1 tracking-wide">
+                MBBS · MD Psychiatry · DM Addiction Psychiatry
+              </p>
+              <p className="text-xs text-ink-muted mt-0.5 tracking-wide">NIMHANS, Bengaluru</p>
             </div>
           </div>
 

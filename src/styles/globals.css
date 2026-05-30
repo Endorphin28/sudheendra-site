@@ -41,3 +41,8 @@ body {
 .stagger-3 { animation-delay: 0.35s; opacity: 0; }
 .stagger-4 { animation-delay: 0.5s; opacity: 0; }
 .stagger-5 { animation-delay: 0.65s; opacity: 0; }
+
+@keyframes growWidth {
+  from { width: 0%; }
+  to   { width: 100%; }
+}

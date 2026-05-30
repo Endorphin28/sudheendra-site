@@ -250,11 +250,20 @@ export default function ServicesPage() {
           <div className="flex items-center gap-3 mb-4">
             <span className="inline-block text-xs font-medium bg-accent text-white px-4 py-1.5 rounded-full">24 × 7 Available</span>
           </div>
-          <p className="text-ink-muted mb-8 max-w-2xl leading-relaxed">
+          <p className="text-ink-muted mb-6 max-w-2xl leading-relaxed">
             Round-the-clock inpatient psychiatric services for emergencies, severe psychiatric illness,
             and advanced procedures including ECT and Ketamine infusion. Our inpatient facility
             ensures a safe, structured environment for recovery with continuous clinical monitoring.
           </p>
+
+          {/* Location */}
+          <div className="flex items-start gap-2 mb-8 p-4 rounded-xl bg-paper-white border border-paper-warm max-w-md">
+            <span className="text-accent mt-0.5">📍</span>
+            <div>
+              <p className="text-sm font-medium text-ink">First Floor, Dr. R. B. Patil Hospital</p>
+              <p className="text-sm text-ink-muted">Vidyanagar, Hubballi</p>
+            </div>
+          </div>
 
           <div className="mb-10">
             <PhotoCarousel photos={inpatientPhotos} />
@@ -283,13 +292,22 @@ export default function ServicesPage() {
             <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium">Exclusive De-addiction Centre</p>
           </div>
           <h2 className="font-display text-3xl md:text-4xl text-ink mb-4">Parivartan-VGH</h2>
-          <p className="text-ink-muted mb-8 max-w-2xl leading-relaxed">
+          <p className="text-ink-muted mb-6 max-w-2xl leading-relaxed">
             An exclusive, dedicated de-addiction centre providing comprehensive inpatient and
             outpatient services for all addictive disorders, in collaboration with{" "}
             <span className="text-ink font-medium">Vivekananda General Hospital</span>, Hubballi.
             Parivartan offers a structured, evidence-based environment for recovery from substance
             use and behavioural addictions, with a focus on long-term rehabilitation.
           </p>
+
+          {/* Location */}
+          <div className="flex items-start gap-2 mb-8 p-4 rounded-xl bg-paper-white border border-paper-warm max-w-md">
+            <span className="text-accent mt-0.5">📍</span>
+            <div>
+              <p className="text-sm font-medium text-ink">Vivekananda General Hospital</p>
+              <p className="text-sm text-ink-muted">Deshpande Nagar, Hubballi</p>
+            </div>
+          </div>
 
           <div className="mb-10">
             <PhotoCarousel photos={parivartanPhotos} />
@@ -299,7 +317,7 @@ export default function ServicesPage() {
             <div className="p-6 rounded-2xl bg-paper-white border border-paper-warm">
               <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">In collaboration with</p>
               <p className="text-sm font-medium text-ink">Vivekananda General Hospital</p>
-              <p className="text-xs text-ink-muted mt-0.5">Hubballi, Karnataka</p>
+              <p className="text-xs text-ink-muted mt-0.5">Deshpande Nagar, Hubballi</p>
             </div>
           </div>
 
