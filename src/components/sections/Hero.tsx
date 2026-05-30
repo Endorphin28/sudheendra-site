@@ -86,14 +86,28 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right — Photo */}
-          <div className="hidden md:flex flex-col gap-4 animate-fade-up stagger-2">
-            <div className="relative h-[520px] rounded-2xl overflow-hidden">
+          {/* Photo — mobile: small banner, desktop: full card */}
+          <div className="flex flex-col gap-4 animate-fade-up stagger-2">
+            {/* Mobile: compact horizontal photo */}
+            <div className="relative h-48 rounded-2xl overflow-hidden md:hidden">
               <Image
                 src="/images/doctor/dr-portrait.jpg"
                 alt="Dr. Sudheendra Huddar — Consultant Psychiatrist, Hubballi"
                 fill
-                sizes="(max-width: 768px) 0vw, 50vw"
+                sizes="100vw"
+                className="object-cover"
+                style={{ objectPosition: "50% 12%" }}
+                quality={90}
+                priority
+              />
+            </div>
+            {/* Desktop: tall card */}
+            <div className="relative h-[520px] rounded-2xl overflow-hidden hidden md:block">
+              <Image
+                src="/images/doctor/dr-portrait.jpg"
+                alt="Dr. Sudheendra Huddar — Consultant Psychiatrist, Hubballi"
+                fill
+                sizes="50vw"
                 className="object-cover"
                 style={{ objectPosition: "50% 8%" }}
                 quality={90}
