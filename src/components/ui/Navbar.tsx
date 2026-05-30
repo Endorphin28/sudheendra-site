@@ -5,8 +5,8 @@ import { useState } from "react";
 const links = [
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
+  { href: "/faq", label: "FAQ" },
   { href: "/products", label: "Products" },
-  { href: "/research", label: "Research" },
 ];
 
 export default function Navbar() {

@@ -4,6 +4,10 @@ import { useState } from "react";
 
 const faqs = [
   {
+    q: "How does an in-person consultation work?",
+    a: "You can walk in directly during OPD hours (Monday to Saturday, 11am–2pm and 3pm–8pm) at Sukhibhava Healthcare, Deshpande Nagar, Hubballi. No prior appointment is required, though calling ahead is recommended to avoid wait times. At the clinic, you will be seen by Dr. Sudheendra Huddar in a private consultation room. The session typically lasts 20–45 minutes depending on your needs. A prescription and any necessary referrals will be provided at the end of the consultation. Please carry any previous medical records, reports, or prescriptions if available.",
+  },
+  {
     q: "How does an online consultation work?",
     a: "After booking and payment, you receive a Google Meet link instantly. At your appointment time, simply click the link to join the video call. The consultation is 30 minutes and fully confidential.",
   },

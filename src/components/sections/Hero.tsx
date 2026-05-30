@@ -25,6 +25,7 @@ export default function Hero() {
 
             {/* Subhead */}
             <p className="text-lg text-ink-muted leading-relaxed mb-10 animate-fade-up stagger-3">
+              Available for <strong className="text-ink">in-person and online consultations</strong>.
               Outpatient psychiatry clinic and de-addiction centre in Hubballi,
               Karnataka. Online consultations available for patients across India.
             </p>
@@ -49,7 +50,7 @@ export default function Hero() {
                 href="/book"
                 className="bg-accent text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-accent-dark transition-colors"
               >
-                Book Online — ₹1,200
+                Book Appointment
               </Link>
               <a
                 href="https://wa.me/918073398651"

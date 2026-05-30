@@ -1,5 +1,14 @@
 import Link from "next/link";
 
+const deaddictionServices = [
+  "Alcohol Addiction",
+  "Tobacco Addiction",
+  "Cannabis & Other Drugs",
+  "Internet / Mobile Addiction",
+  "Gaming Addiction",
+  "Gambling Addiction",
+];
+
 const psychiatryServices = [
   "Depression & Anxiety",
   "Stress Management",
@@ -15,15 +24,6 @@ const psychiatryServices = [
   "Mood Disorders",
 ];
 
-const deaddictionServices = [
-  "Alcohol Addiction",
-  "Tobacco Addiction",
-  "Cannabis & Other Drugs",
-  "Internet / Mobile Addiction",
-  "Gaming Addiction",
-  "Gambling Addiction",
-];
-
 export default function ExpertiseSection() {
   return (
     <section className="py-20 px-6 bg-paper-white border-y border-paper-warm">
@@ -34,43 +34,37 @@ export default function ExpertiseSection() {
           <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-3">
             Areas of Expertise
           </p>
-          <h2 className="font-display text-3xl md:text-4xl text-ink">
+          <h2 className="font-display text-4xl md:text-5xl text-ink font-bold">
             Conditions I treat
           </h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
 
-          {/* Psychiatric Consultation */}
+          {/* LEFT — De-addiction */}
           <div>
-            <div className="flex items-center gap-2 mb-6">
-              <span className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />
-              <h3 className="text-sm font-medium text-ink uppercase tracking-wider">
-                Psychiatric Consultation & Counselling
-              </h3>
-            </div>
-            <ul className="grid grid-cols-2 gap-x-6 gap-y-3">
-              {psychiatryServices.map((s) => (
-                <li key={s} className="flex items-center gap-2 text-sm text-ink-soft">
-                  <span className="w-1 h-1 rounded-full bg-accent-light flex-shrink-0" />
+            <h3 className="text-base font-bold text-ink uppercase tracking-wider mb-6 border-b border-paper-warm pb-3">
+              De-addiction Treatment & Counselling
+            </h3>
+            <ul className="space-y-3">
+              {deaddictionServices.map((s) => (
+                <li key={s} className="flex items-center gap-3 text-sm text-ink-soft">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
                   {s}
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* De-addiction */}
+          {/* RIGHT — Psychiatric Consultation */}
           <div>
-            <div className="flex items-center gap-2 mb-6">
-              <span className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />
-              <h3 className="text-sm font-medium text-ink uppercase tracking-wider">
-                De-addiction Treatment & Counselling
-              </h3>
-            </div>
-            <ul className="space-y-3">
-              {deaddictionServices.map((s) => (
+            <h3 className="text-base font-bold text-ink uppercase tracking-wider mb-6 border-b border-paper-warm pb-3">
+              Psychiatric Consultation & Counselling
+            </h3>
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-3">
+              {psychiatryServices.map((s) => (
                 <li key={s} className="flex items-center gap-2 text-sm text-ink-soft">
-                  <span className="w-1 h-1 rounded-full bg-accent-light flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-light flex-shrink-0" />
                   {s}
                 </li>
               ))}

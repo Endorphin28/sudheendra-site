@@ -4,7 +4,6 @@ import Hero from "@/components/sections/Hero";
 import ProductsPreview from "@/components/sections/ProductsPreview";
 import ClinicPreview from "@/components/sections/ClinicPreview";
 import ExpertiseSection from "@/components/sections/ExpertiseSection";
-import FAQ from "@/components/sections/FAQ";
 
 export default function Home() {
   return (
@@ -14,7 +13,6 @@ export default function Home() {
         <Hero />
         <ExpertiseSection />
         <ClinicPreview />
-        <FAQ />
         <ProductsPreview />
       </main>
       <Footer />
