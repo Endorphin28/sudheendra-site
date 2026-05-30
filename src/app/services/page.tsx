@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import PhotoCarousel from "@/components/ui/PhotoCarousel";
@@ -154,7 +155,16 @@ export default function ServicesPage() {
             <span className="w-2 h-2 rounded-full bg-accent" />
             <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium">Outpatient Clinic</p>
           </div>
-          <h2 className="font-display text-3xl md:text-4xl text-ink mb-4">Sukhibhava Healthcare</h2>
+          <div className="flex items-center gap-4 mb-4">
+            <Image
+              src="/images/logo/sukhibhava-logo.png"
+              alt="Sukhibhava Healthcare Logo"
+              width={56}
+              height={70}
+              className="object-contain flex-shrink-0"
+            />
+            <h2 className="font-display text-3xl md:text-4xl text-ink">Sukhibhava Healthcare</h2>
+          </div>
           <p className="text-ink-muted mb-8 max-w-2xl leading-relaxed">
             Our outpatient clinic in Deshpande Nagar, Hubballi offers comprehensive psychiatric
             consultation, counselling, and de-addiction treatment in a private, professional environment.
@@ -279,7 +289,7 @@ export default function ServicesPage() {
 
           <a href="tel:+918073398651"
             className="inline-flex items-center gap-2 bg-accent text-white text-sm px-6 py-3 rounded-full hover:bg-accent-dark transition-colors font-medium">
-            Call for Admission Enquiry →
+            Enquire about Admission
           </a>
         </section>
 
@@ -324,7 +334,7 @@ export default function ServicesPage() {
           <div className="flex flex-wrap gap-3">
             <a href="tel:+918073398651"
               className="inline-flex items-center gap-2 bg-accent text-white text-sm px-6 py-3 rounded-full hover:bg-accent-dark transition-colors font-medium">
-              Enquire about Admission →
+              Enquire about Admission
             </a>
             <a href="https://wa.me/918073398651" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 border border-[#25D366] text-[#25D366] text-sm px-5 py-3 rounded-full hover:bg-[#25D366] hover:text-white transition-colors font-medium">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const MAPS_URL = "https://share.google/ozC7F3JAP8iYPZ8G5";
 
@@ -11,9 +12,18 @@ export default function ClinicPreview() {
           <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-3">
             Clinic Details
           </p>
-          <h2 className="font-display text-4xl md:text-5xl text-ink">
-            Sukhibhava Healthcare
-          </h2>
+          <div className="flex items-center gap-4">
+            <Image
+              src="/images/logo/sukhibhava-logo.png"
+              alt="Sukhibhava Healthcare Logo"
+              width={64}
+              height={80}
+              className="object-contain flex-shrink-0"
+            />
+            <h2 className="font-display text-4xl md:text-5xl text-ink">
+              Sukhibhava Healthcare
+            </h2>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-10 items-start">
