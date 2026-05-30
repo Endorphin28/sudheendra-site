@@ -19,8 +19,9 @@ export default function PhotoCarousel({ photos }: { photos: Photo[] }) {
           src={photos[current].src}
           alt={photos[current].label}
           fill
-          sizes="(max-width: 768px) 100vw, 800px"
+          sizes="(max-width: 768px) 100vw, 900px"
           className="object-cover transition-opacity duration-300"
+          quality={90}
           priority={current === 0}
         />
         {/* Label */}

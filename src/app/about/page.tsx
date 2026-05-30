@@ -67,13 +67,13 @@ export default function AboutPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="relative h-72 rounded-2xl overflow-hidden col-span-2">
-              <Image src="/images/doctor/dr-wide.jpg" alt="Dr. Sudheendra Huddar at his clinic" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover object-top" />
+              <Image src="/images/doctor/dr-wide.jpg" alt="Dr. Sudheendra Huddar at his clinic" fill sizes="(max-width: 768px) 100vw, 50vw" quality={90} className="object-cover object-top" />
             </div>
             <div className="relative h-48 rounded-2xl overflow-hidden">
-              <Image src="/images/doctor/dr-writing-1.jpg" alt="Dr. Sudheendra Huddar" fill sizes="25vw" className="object-cover object-top" />
+              <Image src="/images/doctor/dr-writing-1.jpg" alt="Dr. Sudheendra Huddar" fill sizes="25vw" quality={90} className="object-cover object-top" />
             </div>
             <div className="relative h-48 rounded-2xl overflow-hidden">
-              <Image src="/images/doctor/dr-writing-2.jpg" alt="Dr. Sudheendra Huddar" fill sizes="25vw" className="object-cover object-top" />
+              <Image src="/images/doctor/dr-writing-2.jpg" alt="Dr. Sudheendra Huddar" fill sizes="25vw" quality={90} className="object-cover object-top" />
             </div>
           </div>
         </div>

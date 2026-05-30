@@ -10,8 +10,8 @@ export default function Hero() {
           {/* Left — Text */}
           <div>
             {/* Eyebrow */}
-            <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-6 animate-fade-up stagger-1">
-              Consultant Psychiatrist · Hubballi, Karnataka
+            <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-6 animate-fade-up stagger-1 whitespace-nowrap">
+              Consultant Psychiatrist · Hubballi
             </p>
 
             {/* Headline */}
@@ -96,6 +96,7 @@ export default function Hero() {
                 sizes="(max-width: 768px) 0vw, 50vw"
                 className="object-cover"
                 style={{ objectPosition: "50% 8%" }}
+                quality={90}
                 priority
               />
             </div>
