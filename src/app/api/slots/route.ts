@@ -28,6 +28,8 @@ export async function GET(req: NextRequest) {
     const dayStart = new Date(`${date}T00:00:00+05:30`).toISOString();
     const dayEnd   = new Date(`${date}T23:59:59+05:30`).toISOString();
 
+    const pendingCutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+
     // Run all queries in parallel
     const [busy, dbBookingsResult, blockedResult] = await Promise.all([
       getBusySlots(date),
@@ -36,7 +38,7 @@ export async function GET(req: NextRequest) {
         .select("slot_start, slot_end")
         .gte("slot_start", dayStart)
         .lte("slot_start", dayEnd)
-        .in("payment_status", ["paid", "pending"]),
+        .or(`payment_status.eq.paid,and(payment_status.eq.pending,created_at.gt.${pendingCutoff})`),
       supabaseAdmin
         .from("blocked_slots")
         .select("date, slot_start, slot_end")

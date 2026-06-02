@@ -2,5 +2,5 @@ node_modules
 .next
 pictures
 scripts
-Logo
+/Logo
 *.log
