@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CONSULT_TYPES, CONSULT_TYPE_KEYS, formatINR } from "@/lib/consultations";
 
 const MAPS_URL = "https://share.google/ozC7F3JAP8iYPZ8G5";
 
@@ -42,23 +41,22 @@ export default function ClinicPreview() {
               </div>
             </div>
 
-            {/* Online consultation fees */}
+            {/* Consultations */}
             <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
-              <p className="text-xs uppercase tracking-widest text-ink-faint mb-4">Online Consultation Fees</p>
+              <p className="text-xs uppercase tracking-widest text-ink-faint mb-4">Consultations</p>
               <div className="space-y-3">
-                {CONSULT_TYPE_KEYS.map((key, i) => {
-                  const t = CONSULT_TYPES[key];
-                  return (
-                    <div key={key} className={`flex justify-between items-center ${i > 0 ? "border-t border-paper-warm pt-3" : ""}`}>
-                      <span className="text-sm text-ink">{t.name} <span className="text-ink-muted text-xs">({t.minutes} min)</span></span>
-                      <span className="font-display text-lg text-accent">{formatINR(t.fee)}</span>
-                    </div>
-                  );
-                })}
+                <div>
+                  <p className="text-sm text-ink font-medium">Online (Google Meet)</p>
+                  <p className="text-xs text-ink-muted">
+                    Mon, Wed &amp; Fri. Session options and fees are shown when you{" "}
+                    <Link href="/book" className="text-accent hover:underline">book online</Link>.
+                  </p>
+                </div>
+                <div className="border-t border-paper-warm pt-3">
+                  <p className="text-sm text-ink font-medium">In-person</p>
+                  <p className="text-xs text-ink-muted">Please contact the OPD directly.</p>
+                </div>
               </div>
-              <p className="text-xs text-ink-muted mt-4 pt-3 border-t border-paper-warm">
-                For in-person consultations, please contact the OPD directly.
-              </p>
             </div>
 
             {/* Address + Maps */}

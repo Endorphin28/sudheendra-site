@@ -4,7 +4,6 @@ import Image from "next/image";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import PhotoCarousel from "@/components/ui/PhotoCarousel";
-import { CONSULT_TYPES, CONSULT_TYPE_KEYS, formatINR } from "@/lib/consultations";
 
 export const metadata: Metadata = {
   title: "Services | Psychiatry & De-Addiction Centre, Hubballi",
@@ -187,14 +186,10 @@ export default function ServicesPage() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">Online Consultation</p>
-              {CONSULT_TYPE_KEYS.map((key) => {
-                const t = CONSULT_TYPES[key];
-                return (
-                  <p key={key} className="text-sm text-ink">
-                    {t.name} ({t.minutes} min): <span className="font-semibold text-accent">{formatINR(t.fee)}</span>
-                  </p>
-                );
-              })}
+              <p className="text-sm text-ink">Mon, Wed &amp; Fri via Google Meet</p>
+              <p className="text-xs text-ink-muted mt-1">
+                Fees shown when you <Link href="/book" className="text-accent hover:underline">book online</Link>
+              </p>
               <p className="text-xs text-ink-muted mt-1">In-person: please contact the OPD</p>
             </div>
             <div>

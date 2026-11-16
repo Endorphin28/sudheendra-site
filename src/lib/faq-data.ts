@@ -1,9 +1,3 @@
-import { CONSULT_TYPES, CONSULT_TYPE_KEYS, formatINR } from "@/lib/consultations";
-
-const onlineFees = CONSULT_TYPE_KEYS
-  .map((k) => `${CONSULT_TYPES[k].name} (${CONSULT_TYPES[k].minutes} min) — ${formatINR(CONSULT_TYPES[k].fee)}`)
-  .join(", ");
-
 export const faqs = [
   {
     q: "How does an in-person consultation work?",
@@ -35,7 +29,7 @@ export const faqs = [
   },
   {
     q: "What are the consultation fees?",
-    a: `Online consultation fees: ${onlineFees}. For in-person consultation fees and appointments at Sukhibhava Healthcare, please contact the OPD on 80733 98651.`,
+    a: "For online consultations, the available session types and their fees are shown when you book on the Book Appointment page. For in-person consultation fees and appointments at Sukhibhava Healthcare, please contact the OPD on 80733 98651.",
   },
   {
     q: "What are your OPD timings?",
