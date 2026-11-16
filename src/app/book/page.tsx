@@ -87,6 +87,7 @@ export default function BookPage() {
   const slotRef = useRef<HTMLDivElement>(null);
   const [days, setDays]               = useState<number[]>(DEFAULT_SCHEDULE.days);
   const daysLabel = formatDays(days);
+  const onlineOpen = days.length > 0; // no days in the admin schedule = online booking paused
 
   // Weekly schedule (editable from /admin)
   useEffect(() => {
@@ -230,8 +231,11 @@ export default function BookPage() {
 
               {/* Online */}
               <button
-                onClick={() => setConsultType("online")}
-                className="bg-paper-white border-2 border-paper-warm hover:border-accent rounded-2xl p-6 text-left transition-all group"
+                onClick={() => onlineOpen && setConsultType("online")}
+                disabled={!onlineOpen}
+                className={`bg-paper-white border-2 border-paper-warm rounded-2xl p-6 text-left transition-all group ${
+                  onlineOpen ? "hover:border-accent" : "opacity-70 cursor-not-allowed"
+                }`}
               >
                 <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -241,8 +245,17 @@ export default function BookPage() {
                 </div>
                 <h2 className="font-display text-xl text-ink mb-1">Online Consultation</h2>
                 <p className="text-xs text-accent font-medium mb-2">Video consultation · Google Meet</p>
-                <p className="text-sm text-ink-muted">Choose your session, book a slot, pay online and receive a Google Meet link instantly.</p>
-                <p className="mt-4 text-xs text-accent font-medium">{daysLabel} only →</p>
+                {onlineOpen ? (
+                  <>
+                    <p className="text-sm text-ink-muted">Choose your session, book a slot, pay online and receive a Google Meet link instantly.</p>
+                    <p className="mt-4 text-xs text-accent font-medium">{daysLabel} only →</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-ink-muted">Online booking is temporarily paused. Please call or WhatsApp the OPD on 80733 98651 to arrange an online consultation.</p>
+                    <p className="mt-4 text-xs text-ink-faint font-medium">Reopening soon</p>
+                  </>
+                )}
               </button>
 
               {/* In-person */}
