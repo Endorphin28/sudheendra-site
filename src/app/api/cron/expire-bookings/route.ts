@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
+  // Heartbeat write so Supabase's free tier never pauses the project for inactivity
+  await supabaseAdmin.from("keepalive").upsert({ id: 1, pinged_at: new Date().toISOString() });
+
   const cutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
 
   const { data, error } = await supabaseAdmin

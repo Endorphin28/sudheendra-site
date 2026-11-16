@@ -1,0 +1,14 @@
+name: Keep database awake
+
+# Backup to the Vercel cron: pings the site every 2 days so Supabase's
+# free tier never pauses the bookings database for inactivity.
+on:
+  schedule:
+    - cron: "30 3 */2 * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -fsS -m 60 https://www.doctorhuddar.com/api/cron/expire-bookings
