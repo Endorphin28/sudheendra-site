@@ -7,5 +7,8 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 // Client-side (anon key)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Server-side (service role — bypasses RLS)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+// Server-side (service role — bypasses RLS).
+// Next.js 14 caches fetch() by default; database reads must always be fresh.
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
+});

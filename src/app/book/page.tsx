@@ -11,9 +11,9 @@ import { toZonedTime } from "date-fns-tz";
 import {
   CONSULT_TYPES, CONSULT_TYPE_KEYS, formatINR, type ConsultTypeKey,
 } from "@/lib/consultations";
+import { DEFAULT_SCHEDULE, formatDays } from "@/lib/schedule-shared";
 
 const TZ = "Asia/Kolkata";
-const ALLOWED_DAYS = [1, 3, 5]; // Mon, Wed, Fri
 const DAY_HEADERS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 type ConsultType = "online" | "inperson" | null;
@@ -52,12 +52,12 @@ function getMonthGrid(year: number, month: number): (Date | null)[] {
   return cells;
 }
 
-function isAvailableDay(date: Date): boolean {
+function isAvailableDay(date: Date, days: number[]): boolean {
   const todayIST = startOfDay(toZonedTime(new Date(), TZ));
   const dateIST  = startOfDay(toZonedTime(date, TZ));
   if (!isBefore(todayIST, dateIST) && !isToday(dateIST)) return false; // past
   if (isBefore(dateIST, todayIST)) return false;
-  return ALLOWED_DAYS.includes(date.getDay());
+  return days.includes(date.getDay());
 }
 
 function formatDateDisplay(d: Date) {
@@ -85,6 +85,16 @@ export default function BookPage() {
   const [paying, setPaying]           = useState(false);
   const [error, setError]             = useState("");
   const slotRef = useRef<HTMLDivElement>(null);
+  const [days, setDays]               = useState<number[]>(DEFAULT_SCHEDULE.days);
+  const daysLabel = formatDays(days);
+
+  // Weekly schedule (editable from /admin)
+  useEffect(() => {
+    fetch("/api/schedule")
+      .then((r) => r.json())
+      .then((s) => { if (Array.isArray(s.days)) setDays(s.days); })
+      .catch(() => {});
+  }, []);
 
   // Load Razorpay script
   useEffect(() => {
@@ -111,7 +121,7 @@ export default function BookPage() {
   }
 
   async function handleDateSelect(date: Date) {
-    if (!isAvailableDay(date) || !session) return;
+    if (!isAvailableDay(date, days) || !session) return;
     setSelectedDate(date);
     setSelectedSlot(null);
     setSlots([]);
@@ -232,7 +242,7 @@ export default function BookPage() {
                 <h2 className="font-display text-xl text-ink mb-1">Online Consultation</h2>
                 <p className="text-xs text-accent font-medium mb-2">Video consultation · Google Meet</p>
                 <p className="text-sm text-ink-muted">Choose your session, book a slot, pay online and receive a Google Meet link instantly.</p>
-                <p className="mt-4 text-xs text-accent font-medium">Mon, Wed & Fri only →</p>
+                <p className="mt-4 text-xs text-accent font-medium">{daysLabel} only →</p>
               </button>
 
               {/* In-person */}
@@ -349,7 +359,7 @@ export default function BookPage() {
                   </button>
                 );
               })}
-              <p className="text-xs text-ink-muted text-center pt-2">All online sessions are on Google Meet · Mon, Wed & Fri</p>
+              <p className="text-xs text-ink-muted text-center pt-2">All online sessions are on Google Meet · {daysLabel}</p>
             </div>
           )}
 
@@ -361,7 +371,7 @@ export default function BookPage() {
                   {consult.name} · {formatINR(consult.fee)} · {consult.minutes} min
                 </p>
                 <h2 className="font-display text-xl text-ink">Select a date</h2>
-                <p className="text-sm text-ink-muted">Available Monday, Wednesday & Friday</p>
+                <p className="text-sm text-ink-muted">Available {daysLabel}</p>
               </div>
 
               {/* Month navigation */}
@@ -392,7 +402,7 @@ export default function BookPage() {
               <div className="grid grid-cols-7 gap-1">
                 {monthGrid.map((date, i) => {
                   if (!date) return <div key={i} />;
-                  const available = isAvailableDay(date);
+                  const available = isAvailableDay(date, days);
                   const isSelected = selectedDate?.toDateString() === date.toDateString();
                   const isPast = isBefore(startOfDay(toZonedTime(date, TZ)), startOfDay(toZonedTime(new Date(), TZ)));
 

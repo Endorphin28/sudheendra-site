@@ -33,6 +33,6 @@ export const faqs = [
   },
   {
     q: "What are your OPD timings?",
-    a: "Monday to Saturday, 11am–2pm and 3pm–8pm at Sukhibhava Healthcare, Deshpande Nagar, Hubballi. Online consultations are available Monday, Wednesday and Friday.",
+    a: "Monday to Saturday, 11am–2pm and 3pm–8pm at Sukhibhava Healthcare, Deshpande Nagar, Hubballi. Online consultation days and times are shown on the Book Appointment page.",
   },
 ];

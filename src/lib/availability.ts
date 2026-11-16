@@ -3,11 +3,9 @@ import { toZonedTime } from "date-fns-tz";
 import { getBusySlots } from "@/lib/google-calendar";
 import { supabaseAdmin } from "@/lib/supabase";
 import { CONSULT_TYPES, type ConsultTypeKey } from "@/lib/consultations";
+import { getSchedule, type Schedule } from "@/lib/schedule";
 
 const TZ = "Asia/Kolkata";
-const ALLOWED_DAYS = [1, 3, 5]; // Mon, Wed, Fri
-const WINDOW_START = "14:30"; // online consultation window, IST
-const WINDOW_END = "15:45";
 const STEP_MINUTES = 15;   // candidate start times every 15 min
 const BUFFER_MINUTES = 15; // gap kept between consecutive appointments
 const MIN_NOTICE_MINUTES = 60;
@@ -37,13 +35,15 @@ export function istDateOf(iso: string) {
   return format(toZonedTime(new Date(iso), TZ), "yyyy-MM-dd");
 }
 
-export function isBookableDay(date: string) {
-  return ALLOWED_DAYS.includes(istTime(date, "12:00").getDay());
+export function isBookableDay(date: string, schedule: Schedule) {
+  // Noon IST on that date is still the same calendar day in UTC, so getUTCDay is the IST weekday.
+  return schedule.days.includes(istTime(date, "12:00").getUTCDay());
 }
 
 /** Free start times on `date` (yyyy-MM-dd, IST) for the given consultation type. */
 export async function getAvailableSlots(date: string, type: ConsultTypeKey): Promise<Slot[]> {
-  if (!isBookableDay(date)) return [];
+  const schedule = await getSchedule();
+  if (!isBookableDay(date, schedule)) return [];
 
   const minutes = CONSULT_TYPES[type].minutes;
   const dayStart = istTime(date, "00:00").toISOString();
@@ -77,12 +77,12 @@ export async function getAvailableSlots(date: string, type: ConsultTypeKey): Pro
     ...bookings.data.map((b) => ({ start: b.slot_start, end: b.slot_end })),
   ].map((b) => ({ start: new Date(b.start), end: new Date(b.end) }));
 
-  const windowEnd = istTime(date, WINDOW_END);
+  const windowEnd = istTime(date, schedule.windowEnd);
   const earliest = new Date(Date.now() + MIN_NOTICE_MINUTES * MINUTE);
   const slots: Slot[] = [];
 
   for (
-    let start = istTime(date, WINDOW_START);
+    let start = istTime(date, schedule.windowStart);
     start.getTime() + minutes * MINUTE <= windowEnd.getTime();
     start = new Date(start.getTime() + STEP_MINUTES * MINUTE)
   ) {

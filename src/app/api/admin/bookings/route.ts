@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { supabaseAdmin } from "@/lib/supabase";
+import { isAuthenticated } from "@/lib/admin-auth";
 
-async function isAuthenticated() {
-  const cookieStore = await cookies();
-  const session = cookieStore.get("admin_session");
-  return session?.value === process.env.ADMIN_PASSWORD;
-}
+export const dynamic = "force-dynamic";
+const BOOKING_STATUSES = ["confirmed", "pending", "cancelled", "completed"];
 
 // GET — list all bookings
 export async function GET(req: NextRequest) {
@@ -33,6 +30,9 @@ export async function PATCH(req: NextRequest) {
   if (!await isAuthenticated()) return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
 
   const { id, booking_status } = await req.json();
+  if (typeof id !== "string" || !BOOKING_STATUSES.includes(booking_status)) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
   const { error } = await supabaseAdmin
     .from("bookings")
     .update({ booking_status })

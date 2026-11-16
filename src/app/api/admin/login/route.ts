@@ -1,32 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { checkPassword, endSession, startSession } from "@/lib/admin-auth";
+
+// Simple in-memory throttle against password guessing (per server instance).
+const attempts = new Map<string, { count: number; until: number }>();
+const MAX_ATTEMPTS = 5;
+const LOCK_MS = 15 * 60 * 1000;
 
 export async function POST(req: NextRequest) {
-  const { password } = await req.json();
-  const adminPassword = process.env.ADMIN_PASSWORD;
-
-  if (!adminPassword) {
+  if (!process.env.ADMIN_PASSWORD) {
     return NextResponse.json({ error: "Admin not configured" }, { status: 500 });
   }
 
-  if (password !== adminPassword) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  const entry = attempts.get(ip);
+  if (entry && entry.count >= MAX_ATTEMPTS && entry.until > Date.now()) {
+    return NextResponse.json({ error: "Too many attempts. Try again in 15 minutes." }, { status: 429 });
+  }
+
+  const { password } = await req.json().catch(() => ({}));
+  if (!checkPassword(password)) {
+    const count = entry && entry.until > Date.now() ? entry.count + 1 : 1;
+    attempts.set(ip, { count, until: Date.now() + LOCK_MS });
     return NextResponse.json({ error: "Incorrect password" }, { status: 401 });
   }
 
-  const cookieStore = await cookies();
-  cookieStore.set("admin_session", process.env.ADMIN_PASSWORD!, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 60 * 60 * 8, // 8 hours
-    path: "/",
-  });
-
+  attempts.delete(ip);
+  await startSession();
   return NextResponse.json({ success: true });
 }
 
 export async function DELETE() {
-  const cookieStore = await cookies();
-  cookieStore.delete("admin_session");
+  await endSession();
   return NextResponse.json({ success: true });
 }

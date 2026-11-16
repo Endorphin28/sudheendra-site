@@ -186,7 +186,7 @@ export default function ServicesPage() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">Online Consultation</p>
-              <p className="text-sm text-ink">Mon, Wed &amp; Fri via Google Meet</p>
+              <p className="text-sm text-ink">Video consultation via Google Meet</p>
               <p className="text-xs text-ink-muted mt-1">
                 Fees shown when you <Link href="/book" className="text-accent hover:underline">book online</Link>
               </p>

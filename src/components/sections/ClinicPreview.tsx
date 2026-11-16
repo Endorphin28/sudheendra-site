@@ -48,7 +48,7 @@ export default function ClinicPreview() {
                 <div>
                   <p className="text-sm text-ink font-medium">Online (Google Meet)</p>
                   <p className="text-xs text-ink-muted">
-                    Mon, Wed &amp; Fri. Session options and fees are shown when you{" "}
+                    Available days, times and fees are shown when you{" "}
                     <Link href="/book" className="text-accent hover:underline">book online</Link>.
                   </p>
                 </div>

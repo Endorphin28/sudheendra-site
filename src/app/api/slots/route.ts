@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAvailableSlots, isBookableDay } from "@/lib/availability";
+import { getAvailableSlots } from "@/lib/availability";
+
+export const dynamic = "force-dynamic";
 import { isConsultType } from "@/lib/consultations";
 
 export async function GET(req: NextRequest) {
@@ -12,10 +14,6 @@ export async function GET(req: NextRequest) {
   if (!isConsultType(type)) {
     return NextResponse.json({ error: "valid type required" }, { status: 400 });
   }
-  if (!isBookableDay(date)) {
-    return NextResponse.json({ error: "No slots on this day" }, { status: 400 });
-  }
-
   try {
     const slots = await getAvailableSlots(date, type);
     return NextResponse.json({ date, type, slots });

@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { format, addDays, startOfMonth, getDaysInMonth } from "date-fns";
+import { format, startOfMonth, getDaysInMonth } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
+import {
+  DEFAULT_SCHEDULE, TIME_OPTIONS, WEEKDAYS, WEEK_ORDER,
+  formatDays, formatTime, toMinutes, type Schedule,
+} from "@/lib/schedule-shared";
 
 const TZ = "Asia/Kolkata";
-const ALLOWED_DAYS = [1, 3, 5];
 
 type Booking = {
   id: string;
@@ -61,7 +64,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
       body: JSON.stringify({ password }),
     });
     if (res.ok) { onLogin(); }
-    else { setError("Incorrect password"); }
+    else { setError((await res.json().catch(() => ({}))).error ?? "Incorrect password"); }
     setLoading(false);
   }
 
@@ -216,38 +219,136 @@ function BookingsTab() {
 
 // ── Availability Tab ──────────────────────────────────────────────────────────
 
+function WeeklyScheduleCard({ schedule, onSaved }: { schedule: Schedule; onSaved: (s: Schedule) => void }) {
+  const [days, setDays]   = useState<number[]>(schedule.days);
+  const [start, setStart] = useState(schedule.windowStart);
+  const [end, setEnd]     = useState(schedule.windowEnd);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg]     = useState<{ ok: boolean; text: string } | null>(null);
+
+  useEffect(() => {
+    setDays(schedule.days); setStart(schedule.windowStart); setEnd(schedule.windowEnd);
+  }, [schedule]);
+
+  const dirty =
+    start !== schedule.windowStart || end !== schedule.windowEnd ||
+    [...days].sort().join() !== [...schedule.days].sort().join();
+
+  function toggleDay(d: number) {
+    setMsg(null);
+    setDays((cur) => (cur.includes(d) ? cur.filter((x) => x !== d) : [...cur, d]));
+  }
+
+  async function save() {
+    setSaving(true); setMsg(null);
+    const res = await fetch("/api/admin/schedule", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ days, windowStart: start, windowEnd: end }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) { onSaved(data); setMsg({ ok: true, text: "Saved. The booking page now uses this schedule." }); }
+    else setMsg({ ok: false, text: data.error ?? "Could not save" });
+    setSaving(false);
+  }
+
+  const selectCls = "px-3 py-2 rounded-xl border border-paper-warm bg-paper text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent";
+
+  return (
+    <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
+      <h3 className="font-medium text-ink mb-1">Weekly online schedule</h3>
+      <p className="text-xs text-ink-muted mb-5">
+        Patients can book within this window. Each session (15, 30 or 45 min) must fit inside it, with a 15-minute gap between appointments.
+      </p>
+
+      <p className="text-xs font-medium text-ink-soft uppercase tracking-wider mb-2">Days</p>
+      <div className="flex flex-wrap gap-2 mb-5">
+        {WEEK_ORDER.map((d) => {
+          const on = days.includes(d);
+          return (
+            <button key={d} type="button" onClick={() => toggleDay(d)}
+              className={`px-3.5 py-2 rounded-full text-sm font-medium border transition-colors ${
+                on ? "bg-accent text-white border-accent" : "border-paper-warm text-ink-muted hover:border-ink"
+              }`}>
+              {WEEKDAYS[d]}
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="text-xs font-medium text-ink-soft uppercase tracking-wider mb-2">Time window (IST)</p>
+      <div className="flex items-center gap-3 mb-5">
+        <select value={start} onChange={(e) => { setStart(e.target.value); setMsg(null); }} className={selectCls}>
+          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{formatTime(t)}</option>)}
+        </select>
+        <span className="text-sm text-ink-muted">to</span>
+        <select value={end} onChange={(e) => { setEnd(e.target.value); setMsg(null); }} className={selectCls}>
+          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{formatTime(t)}</option>)}
+        </select>
+      </div>
+
+      {days.length === 0 && (
+        <p className="text-xs text-orange-600 mb-3">No days selected: online booking will be closed.</p>
+      )}
+      {msg && <p className={`text-sm mb-3 ${msg.ok ? "text-green-700" : "text-red-600"}`}>{msg.text}</p>}
+
+      <button onClick={save} disabled={saving || !dirty}
+        className="bg-accent text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-accent-dark transition-colors disabled:opacity-50">
+        {saving ? "Saving..." : "Save schedule"}
+      </button>
+    </div>
+  );
+}
+
 function AvailabilityTab() {
+  const [schedule, setSchedule]         = useState<Schedule | null>(null);
   const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>([]);
   const [currentMonth, setCurrentMonth] = useState(() => startOfMonth(toZonedTime(new Date(), TZ)));
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [blockType, setBlockType]       = useState<"full" | "slot1" | "slot2">("full");
+  const [blockType, setBlockType]       = useState<"full" | "range">("full");
+  const [rangeStart, setRangeStart]     = useState("");
+  const [rangeEnd, setRangeEnd]         = useState("");
   const [reason, setReason]             = useState("");
   const [saving, setSaving]             = useState(false);
+  const [error, setError]               = useState("");
 
   const loadBlocked = useCallback(async () => {
     const res = await fetch("/api/admin/blocked-slots");
-    const data = await res.json();
-    setBlockedSlots(data ?? []);
+    if (res.ok) setBlockedSlots(await res.json());
   }, []);
 
-  useEffect(() => { loadBlocked(); }, [loadBlocked]);
+  useEffect(() => {
+    loadBlocked();
+    fetch("/api/admin/schedule").then((r) => r.json()).then((s) => setSchedule(s.days ? s : DEFAULT_SCHEDULE));
+  }, [loadBlocked]);
+
+  // Times within the schedule window, for blocking part of a day
+  const windowTimes = schedule
+    ? TIME_OPTIONS.filter((t) => toMinutes(t) >= toMinutes(schedule.windowStart) && toMinutes(t) <= toMinutes(schedule.windowEnd))
+    : [];
+
+  function selectDate(ds: string) {
+    setSelectedDate(ds); setError(""); setBlockType("full");
+    setRangeStart(windowTimes[0] ?? ""); setRangeEnd(windowTimes[windowTimes.length - 1] ?? "");
+  }
 
   async function blockDate() {
     if (!selectedDate) return;
-    setSaving(true);
+    setSaving(true); setError("");
     const payload = blockType === "full"
-      ? { date: selectedDate, slot_start: null, slot_end: null, reason }
-      : blockType === "slot1"
-      ? { date: selectedDate, slot_start: "14:30:00", slot_end: "15:00:00", reason }
-      : { date: selectedDate, slot_start: "15:15:00", slot_end: "15:45:00", reason };
-
-    await fetch("/api/admin/blocked-slots", {
+      ? { date: selectedDate, reason }
+      : { date: selectedDate, slot_start: rangeStart, slot_end: rangeEnd, reason };
+    const res = await fetch("/api/admin/blocked-slots", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    setReason(""); setSelectedDate(null);
-    await loadBlocked();
+    if (res.ok) {
+      setReason(""); setSelectedDate(null);
+      await loadBlocked();
+    } else {
+      setError((await res.json().catch(() => ({}))).error ?? "Could not block");
+    }
     setSaving(false);
   }
 
@@ -259,6 +360,8 @@ function AvailabilityTab() {
     });
     loadBlocked();
   }
+
+  if (!schedule) return <p className="text-sm text-ink-muted">Loading...</p>;
 
   // Calendar grid
   const year  = currentMonth.getFullYear();
@@ -281,131 +384,149 @@ function AvailabilityTab() {
     return blockedSlots.filter(b => b.date === ds);
   }
 
-  function isFullDayBlocked(day: number) {
-    return getBlockedInfo(day).some(b => !b.slot_start);
-  }
+  const selectCls = "px-3 py-2 rounded-xl border border-paper-warm bg-paper text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent";
 
   return (
-    <div className="grid md:grid-cols-2 gap-8">
+    <div className="space-y-8">
+      <WeeklyScheduleCard schedule={schedule} onSaved={setSchedule} />
 
-      {/* Calendar */}
-      <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-5">
-          <button onClick={() => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
-            className="p-2 rounded-lg hover:bg-paper-warm transition-colors text-ink-muted">←</button>
-          <h3 className="font-medium text-ink">{format(currentMonth, "MMMM yyyy")}</h3>
-          <button onClick={() => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
-            className="p-2 rounded-lg hover:bg-paper-warm transition-colors text-ink-muted">→</button>
-        </div>
+      <div className="grid md:grid-cols-2 gap-8">
 
-        <div className="grid grid-cols-7 mb-2">
-          {["M","T","W","T","F","S","S"].map((d, i) => (
-            <div key={i} className="text-center text-xs font-medium text-ink-faint py-1">{d}</div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-7 gap-1">
-          {cells.map((day, i) => {
-            if (!day) return <div key={i} />;
-            const ds   = dateStr(day);
-            const date = new Date(year, month, day);
-            const isAllowed = ALLOWED_DAYS.includes(date.getDay());
-            const isPast    = date < new Date(todayIST.toDateString());
-            const blocked   = isFullDayBlocked(day);
-            const partBlocked = !blocked && getBlockedInfo(day).length > 0;
-            const isSelected = selectedDate === ds;
-
-            return (
-              <button key={i} onClick={() => isAllowed && !isPast && setSelectedDate(ds)}
-                disabled={!isAllowed || isPast}
-                className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all relative ${
-                  isSelected     ? "bg-accent text-white" :
-                  blocked        ? "bg-red-100 text-red-600" :
-                  partBlocked    ? "bg-orange-100 text-orange-600" :
-                  isAllowed && !isPast ? "hover:bg-accent/10 text-ink cursor-pointer" :
-                  "text-ink-faint/40 cursor-not-allowed"
-                }`}
-              >
-                {day}
-                {partBlocked && <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-orange-400 rounded-full" />}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-4 flex gap-3 text-xs text-ink-muted">
-          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-100 rounded" /> Blocked</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-orange-100 rounded" /> Partial</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-accent/20 rounded" /> Available</span>
-        </div>
-      </div>
-
-      {/* Block form + blocked list */}
-      <div className="space-y-6">
-        {selectedDate ? (
-          <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
-            <h3 className="font-medium text-ink mb-4">
-              Block — {format(new Date(selectedDate + "T12:00:00"), "EEE, d MMM yyyy")}
-            </h3>
-            <div className="space-y-3 mb-4">
-              {[
-                { value: "full",  label: "Full day" },
-                { value: "slot1", label: "Slot 1 — 2:30–3:00 PM" },
-                { value: "slot2", label: "Slot 2 — 3:15–3:45 PM" },
-              ].map((opt) => (
-                <label key={opt.value} className="flex items-center gap-3 cursor-pointer">
-                  <input type="radio" name="blockType" value={opt.value}
-                    checked={blockType === opt.value}
-                    onChange={() => setBlockType(opt.value as "full" | "slot1" | "slot2")}
-                    className="accent-green-600" />
-                  <span className="text-sm text-ink">{opt.label}</span>
-                </label>
-              ))}
-            </div>
-            <input type="text" value={reason} onChange={(e) => setReason(e.target.value)}
-              placeholder="Reason (optional — e.g. Leave, Holiday)"
-              className="w-full px-4 py-2.5 rounded-xl border border-paper-warm bg-paper text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent mb-4" />
-            <div className="flex gap-3">
-              <button onClick={blockDate} disabled={saving}
-                className="flex-1 bg-red-600 text-white py-2.5 rounded-full text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-60">
-                {saving ? "Blocking..." : "Block This Date"}
-              </button>
-              <button onClick={() => setSelectedDate(null)}
-                className="px-4 py-2.5 rounded-full text-sm border border-paper-warm text-ink-muted hover:border-ink transition-colors">
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-paper-warm/50 border border-paper-warm rounded-2xl p-6 text-center text-sm text-ink-muted">
-            Click a Mon / Wed / Fri date on the calendar to block it
-          </div>
-        )}
-
-        {/* Blocked list */}
+        {/* Calendar */}
         <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
-          <h3 className="font-medium text-ink mb-4">Blocked Dates & Slots</h3>
-          {blockedSlots.length === 0 ? (
-            <p className="text-sm text-ink-muted">No dates blocked</p>
-          ) : (
-            <ul className="space-y-2">
-              {blockedSlots.map((b) => (
-                <li key={b.id} className="flex items-center justify-between gap-3 py-2 border-b border-paper-warm last:border-0">
-                  <div>
-                    <p className="text-sm font-medium text-ink">
-                      {format(new Date(b.date + "T12:00:00"), "EEE, d MMM yyyy")}
-                      {b.slot_start ? ` — ${b.slot_start.slice(0, 5)}` : " — Full day"}
-                    </p>
-                    {b.reason && <p className="text-xs text-ink-muted">{b.reason}</p>}
+          <h3 className="font-medium text-ink mb-1">Block dates or times</h3>
+          <p className="text-xs text-ink-muted mb-4">For leave, holidays or other commitments. Pick a date to block it.</p>
+          <div className="flex items-center justify-between mb-5">
+            <button onClick={() => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
+              className="p-2 rounded-lg hover:bg-paper-warm transition-colors text-ink-muted">←</button>
+            <h3 className="font-medium text-ink">{format(currentMonth, "MMMM yyyy")}</h3>
+            <button onClick={() => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
+              className="p-2 rounded-lg hover:bg-paper-warm transition-colors text-ink-muted">→</button>
+          </div>
+
+          <div className="grid grid-cols-7 mb-2">
+            {["M","T","W","T","F","S","S"].map((d, i) => (
+              <div key={i} className="text-center text-xs font-medium text-ink-faint py-1">{d}</div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-1">
+            {cells.map((day, i) => {
+              if (!day) return <div key={i} />;
+              const ds   = dateStr(day);
+              const date = new Date(year, month, day);
+              const isAllowed = schedule.days.includes(date.getDay());
+              const isPast    = date < new Date(todayIST.toDateString());
+              const info      = getBlockedInfo(day);
+              const blocked   = info.some(b => !b.slot_start);
+              const partBlocked = !blocked && info.length > 0;
+              const isSelected = selectedDate === ds;
+
+              return (
+                <button key={i} onClick={() => isAllowed && !isPast && selectDate(ds)}
+                  disabled={!isAllowed || isPast}
+                  className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all relative ${
+                    isSelected     ? "bg-accent text-white" :
+                    blocked        ? "bg-red-100 text-red-600" :
+                    partBlocked    ? "bg-orange-100 text-orange-600" :
+                    isAllowed && !isPast ? "hover:bg-accent/10 text-ink cursor-pointer" :
+                    "text-ink-faint/40 cursor-not-allowed"
+                  }`}
+                >
+                  {day}
+                  {partBlocked && <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-orange-400 rounded-full" />}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 flex gap-3 text-xs text-ink-muted">
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-100 rounded" /> Blocked</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-orange-100 rounded" /> Partly blocked</span>
+          </div>
+        </div>
+
+        {/* Block form + blocked list */}
+        <div className="space-y-6">
+          {selectedDate ? (
+            <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
+              <h3 className="font-medium text-ink mb-4">
+                Block: {format(new Date(selectedDate + "T12:00:00"), "EEE, d MMM yyyy")}
+              </h3>
+              <div className="space-y-3 mb-4">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="radio" name="blockType" checked={blockType === "full"}
+                    onChange={() => setBlockType("full")} className="accent-green-600" />
+                  <span className="text-sm text-ink">Whole day</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="radio" name="blockType" checked={blockType === "range"}
+                    onChange={() => setBlockType("range")} className="accent-green-600" />
+                  <span className="text-sm text-ink">Specific time</span>
+                </label>
+                {blockType === "range" && (
+                  <div className="flex items-center gap-3 pl-7">
+                    <select value={rangeStart} onChange={(e) => setRangeStart(e.target.value)} className={selectCls}>
+                      {windowTimes.slice(0, -1).map((t) => <option key={t} value={t}>{formatTime(t)}</option>)}
+                    </select>
+                    <span className="text-sm text-ink-muted">to</span>
+                    <select value={rangeEnd} onChange={(e) => setRangeEnd(e.target.value)} className={selectCls}>
+                      {windowTimes.slice(1).map((t) => <option key={t} value={t}>{formatTime(t)}</option>)}
+                    </select>
                   </div>
-                  <button onClick={() => unblock(b.id)}
-                    className="text-xs text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
-                    Unblock
-                  </button>
-                </li>
-              ))}
-            </ul>
+                )}
+              </div>
+              <input type="text" value={reason} onChange={(e) => setReason(e.target.value)}
+                placeholder="Reason (optional, e.g. Leave, Holiday)"
+                className="w-full px-4 py-2.5 rounded-xl border border-paper-warm bg-paper text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent mb-4" />
+              {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
+              <div className="flex gap-3">
+                <button onClick={blockDate} disabled={saving}
+                  className="flex-1 bg-red-600 text-white py-2.5 rounded-full text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-60">
+                  {saving ? "Blocking..." : blockType === "full" ? "Block whole day" : "Block this time"}
+                </button>
+                <button onClick={() => setSelectedDate(null)}
+                  className="px-4 py-2.5 rounded-full text-sm border border-paper-warm text-ink-muted hover:border-ink transition-colors">
+                  Cancel
+                </button>
+              </div>
+              <p className="text-xs text-ink-muted mt-3">Existing bookings on this date are not cancelled.</p>
+            </div>
+          ) : (
+            <div className="bg-paper-warm/50 border border-paper-warm rounded-2xl p-6 text-center text-sm text-ink-muted">
+              {schedule.days.length
+                ? `Click a ${formatDays(schedule.days)} date on the calendar to block it`
+                : "Online booking is closed: no days are selected in the weekly schedule"}
+            </div>
           )}
+
+          {/* Blocked list */}
+          <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
+            <h3 className="font-medium text-ink mb-4">Upcoming blocks</h3>
+            {blockedSlots.length === 0 ? (
+              <p className="text-sm text-ink-muted">Nothing blocked</p>
+            ) : (
+              <ul className="space-y-2">
+                {blockedSlots.map((b) => (
+                  <li key={b.id} className="flex items-center justify-between gap-3 py-2 border-b border-paper-warm last:border-0">
+                    <div>
+                      <p className="text-sm font-medium text-ink">
+                        {format(new Date(b.date + "T12:00:00"), "EEE, d MMM yyyy")}
+                        {b.slot_start && b.slot_end
+                          ? `, ${formatTime(b.slot_start.slice(0, 5))} – ${formatTime(b.slot_end.slice(0, 5))}`
+                          : ", whole day"}
+                      </p>
+                      {b.reason && <p className="text-xs text-ink-muted">{b.reason}</p>}
+                    </div>
+                    <button onClick={() => unblock(b.id)}
+                      className="text-xs text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
+                      Unblock
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
     </div>
