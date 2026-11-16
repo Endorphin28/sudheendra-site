@@ -12,6 +12,7 @@ type Booking = {
   patient_name: string;
   patient_email: string;
   patient_phone: string;
+  appointment_type: string;
   slot_start: string;
   slot_end: string;
   amount: number;
@@ -187,7 +188,7 @@ function BookingsTab() {
                         🎥 Join Meet
                       </a>
                     )}
-                    <span className="text-xs text-ink-faint">₹{b.amount} · {b.razorpay_payment_id || "—"}</span>
+                    <span className="text-xs text-ink-faint">{b.appointment_type} · ₹{b.amount.toLocaleString("en-IN")} · {b.razorpay_payment_id || "—"}</span>
                   </div>
                 </div>
                 <div className="flex gap-2 flex-shrink-0">

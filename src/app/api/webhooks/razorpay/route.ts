@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     try {
       const { eventId, meetLink } = await createCalendarEvent({
-        summary:      `Online Consultation — ${booking.patient_name}`,
+        summary:      `${booking.appointment_type} — ${booking.patient_name}`,
         description:  `Patient: ${booking.patient_name}\nPhone: ${booking.patient_phone}\nEmail: ${booking.patient_email}`,
         startISO:     booking.slot_start,
         endISO:       booking.slot_end,
@@ -55,6 +55,8 @@ export async function POST(req: NextRequest) {
         sendPatientConfirmation({
           patientName:  booking.patient_name,
           patientEmail: booking.patient_email,
+          appointmentType: booking.appointment_type,
+          amount:       booking.amount,
           slotStart:    booking.slot_start,
           slotEnd:      booking.slot_end,
           meetLink,
@@ -64,6 +66,8 @@ export async function POST(req: NextRequest) {
           patientName:  booking.patient_name,
           patientEmail: booking.patient_email,
           patientPhone: booking.patient_phone,
+          appointmentType: booking.appointment_type,
+          amount:       booking.amount,
           slotStart:    booking.slot_start,
           meetLink,
           bookingId:    booking.id,

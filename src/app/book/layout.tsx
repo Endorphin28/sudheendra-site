@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Book Online Consultation | ₹1,200 · 30 min",
+  title: "Book an Appointment",
   description:
-    "Book an online psychiatry consultation with Dr. Sudheendra Huddar. Available Mon, Wed & Fri. ₹1,200 for 30 minutes. Instant Google Meet link. Secure payment via Razorpay.",
+    "Book an online psychiatry consultation with Dr. Sudheendra Huddar: intake for new patients or follow-up. Available Mon, Wed & Fri. Instant Google Meet link. Secure payment via Razorpay.",
   alternates: { canonical: "https://doctorhuddar.com/book" },
   openGraph: {
-    title: "Book Online Consultation with Dr. Sudheendra Huddar",
+    title: "Book an Appointment with Dr. Sudheendra Huddar",
     description:
-      "Online psychiatry consultation — ₹1,200 for 30 minutes. Available Mon, Wed & Fri. Google Meet link sent instantly after booking.",
+      "Online psychiatry consultation: intake or follow-up. Available Mon, Wed & Fri. Google Meet link sent instantly after booking.",
     url: "https://doctorhuddar.com/book",
   },
 };

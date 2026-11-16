@@ -1,52 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import { razorpay } from "@/lib/razorpay";
 import { supabaseAdmin } from "@/lib/supabase";
+import { getAvailableSlots, istDateOf } from "@/lib/availability";
+import { CONSULT_TYPES, isConsultType } from "@/lib/consultations";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { patientName, patientEmail, patientPhone, slotStart, slotEnd } = body;
+    const { patientName, patientEmail, patientPhone, consultType, slotStart } = body;
 
-    if (!patientName || !patientEmail || !patientPhone || !slotStart || !slotEnd) {
+    if (!patientName || !patientEmail || !patientPhone || !slotStart || !isConsultType(consultType)) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Double-check slot is still available (prevent race conditions)
-    const { data: existing } = await supabaseAdmin
-      .from("bookings")
-      .select("id")
-      .eq("slot_start", slotStart)
-      .in("payment_status", ["paid", "pending"])
-      .maybeSingle();
-
-    if (existing) {
-      return NextResponse.json({ error: "Slot already booked" }, { status: 409 });
+    // Price, duration and end time come from the server, never the client.
+    // Re-checking availability here also prevents two patients taking the same slot.
+    const consult = CONSULT_TYPES[consultType];
+    const slots = await getAvailableSlots(istDateOf(slotStart), consultType);
+    const slot = slots.find((s) => s.startISO === new Date(slotStart).toISOString());
+    if (!slot) {
+      return NextResponse.json(
+        { error: "This slot is no longer available. Please choose another time." },
+        { status: 409 },
+      );
     }
 
-    // Create Razorpay order
     const order = await razorpay.orders.create({
-      amount:   120000, // ₹1200 in paise
+      amount:   consult.fee * 100, // paise
       currency: "INR",
       notes: {
         patientName,
         patientEmail,
-        slotStart,
+        consultType,
+        slotStart: slot.startISO,
       },
     });
 
-    // Save pending booking to Supabase
     const { data: booking, error } = await supabaseAdmin
       .from("bookings")
       .insert({
-        patient_name:     patientName,
-        patient_email:    patientEmail,
-        patient_phone:    patientPhone,
-        appointment_type: "Online Consultation",
-        slot_start:       slotStart,
-        slot_end:         slotEnd,
-        amount:           1200,
-        payment_status:   "pending",
-        booking_status:   "pending",
+        patient_name:      patientName,
+        patient_email:     patientEmail,
+        patient_phone:     patientPhone,
+        appointment_type:  consult.name,
+        slot_start:        slot.startISO,
+        slot_end:          slot.endISO,
+        amount:            consult.fee,
+        payment_status:    "pending",
+        booking_status:    "pending",
         razorpay_order_id: order.id,
       })
       .select()

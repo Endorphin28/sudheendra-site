@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     template: "%s | Dr. Sudheendra Huddar",
   },
   description:
-    "Dr. Sudheendra Huddar — Consultant Psychiatrist & De-Addiction Specialist in Hubballi, Karnataka. MD & DM Addiction Psychiatry from NIMHANS. In-person & online consultations. Book at ₹1,200.",
+    "Dr. Sudheendra Huddar — Consultant Psychiatrist & De-Addiction Specialist in Hubballi, Karnataka. MD & DM Addiction Psychiatry from NIMHANS. In-person & online consultations.",
   keywords: [
     "psychiatrist Hubballi",
     "psychiatrist Hubli",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Dr. Sudheendra Huddar | Psychiatrist & De-Addiction Specialist, Hubballi",
     description:
-      "Consultant Psychiatrist & De-Addiction Specialist in Hubballi. MD & DM from NIMHANS. In-person & online consultations at ₹1,200.",
+      "Consultant Psychiatrist & De-Addiction Specialist in Hubballi. MD & DM from NIMHANS. In-person & online consultations.",
     type: "website",
     locale: "en_IN",
     url: "https://doctorhuddar.com",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Dr. Sudheendra Huddar | Psychiatrist & De-Addiction Specialist, Hubballi",
     description:
-      "Consultant Psychiatrist & De-Addiction Specialist in Hubballi, Karnataka. MD & DM from NIMHANS. Book online at ₹1,200.",
+      "Consultant Psychiatrist & De-Addiction Specialist in Hubballi, Karnataka. MD & DM from NIMHANS. Book online or in person.",
     images: ["/images/doctor/dr-portrait.jpg"],
   },
   robots: {

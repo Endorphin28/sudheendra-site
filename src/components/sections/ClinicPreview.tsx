@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { CONSULT_TYPES, CONSULT_TYPE_KEYS, formatINR } from "@/lib/consultations";
 
 const MAPS_URL = "https://share.google/ozC7F3JAP8iYPZ8G5";
 
@@ -41,27 +42,23 @@ export default function ClinicPreview() {
               </div>
             </div>
 
-            {/* Consultation Fees */}
+            {/* Online consultation fees */}
             <div className="bg-paper-white border border-paper-warm rounded-2xl p-6">
-              <p className="text-xs uppercase tracking-widest text-ink-faint mb-4">Consultation Fees</p>
+              <p className="text-xs uppercase tracking-widest text-ink-faint mb-4">Online Consultation Fees</p>
               <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-ink">First Consultation</span>
-                  <span className="font-display text-lg text-accent">₹850</span>
-                </div>
-                <div className="flex justify-between items-center border-t border-paper-warm pt-3">
-                  <span className="text-sm text-ink">Follow-up</span>
-                  <span className="font-display text-lg text-accent">₹500</span>
-                </div>
-                <div className="flex justify-between items-center border-t border-paper-warm pt-3">
-                  <span className="text-sm text-ink">Counselling <span className="text-ink-muted text-xs">(45 min)</span></span>
-                  <span className="font-display text-lg text-accent">₹1,500</span>
-                </div>
-                <div className="flex justify-between items-center border-t border-paper-warm pt-3">
-                  <span className="text-sm text-ink">Online Consultation <span className="text-ink-muted text-xs">(30 min)</span></span>
-                  <span className="font-display text-lg text-accent">₹1,200</span>
-                </div>
+                {CONSULT_TYPE_KEYS.map((key, i) => {
+                  const t = CONSULT_TYPES[key];
+                  return (
+                    <div key={key} className={`flex justify-between items-center ${i > 0 ? "border-t border-paper-warm pt-3" : ""}`}>
+                      <span className="text-sm text-ink">{t.name} <span className="text-ink-muted text-xs">({t.minutes} min)</span></span>
+                      <span className="font-display text-lg text-accent">{formatINR(t.fee)}</span>
+                    </div>
+                  );
+                })}
               </div>
+              <p className="text-xs text-ink-muted mt-4 pt-3 border-t border-paper-warm">
+                For in-person consultations, please contact the OPD directly.
+              </p>
             </div>
 
             {/* Address + Maps */}

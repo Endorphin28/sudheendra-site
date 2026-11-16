@@ -8,20 +8,22 @@ import {
   isBefore, isToday, startOfDay,
 } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
+import {
+  CONSULT_TYPES, CONSULT_TYPE_KEYS, formatINR, type ConsultTypeKey,
+} from "@/lib/consultations";
 
 const TZ = "Asia/Kolkata";
 const ALLOWED_DAYS = [1, 3, 5]; // Mon, Wed, Fri
-const AMOUNT = 1200;
 const DAY_HEADERS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MIN_FEE = Math.min(...CONSULT_TYPE_KEYS.map((k) => CONSULT_TYPES[k].fee));
 
 type ConsultType = "online" | "inperson" | null;
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3 | 4 | 5;
 
 type Slot = {
   label: string;
   startISO: string;
   endISO: string;
-  available: boolean;
 };
 
 declare global {
@@ -67,6 +69,7 @@ function formatDateDisplay(d: Date) {
 
 export default function BookPage() {
   const [consultType, setConsultType] = useState<ConsultType>(null);
+  const [session, setSession]         = useState<ConsultTypeKey | null>(null);
   const [step, setStep]               = useState<Step>(1);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = toZonedTime(new Date(), TZ);
@@ -100,15 +103,25 @@ export default function BookPage() {
     }
   }, [slots]);
 
+  function chooseSession(key: ConsultTypeKey) {
+    setSession(key);
+    setSelectedDate(null);
+    setSelectedSlot(null);
+    setSlots([]);
+    setStep(2);
+  }
+
   async function handleDateSelect(date: Date) {
-    if (!isAvailableDay(date)) return;
+    if (!isAvailableDay(date) || !session) return;
     setSelectedDate(date);
     setSelectedSlot(null);
     setSlots([]);
+    setError("");
     setLoadingSlots(true);
     try {
-      const res  = await fetch(`/api/slots?date=${format(date, "yyyy-MM-dd")}`);
+      const res  = await fetch(`/api/slots?date=${format(date, "yyyy-MM-dd")}&type=${session}`);
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
       setSlots(data.slots ?? []);
     } catch {
       setError("Failed to load slots. Please try again.");
@@ -139,8 +152,8 @@ export default function BookPage() {
           patientName:  form.name,
           patientEmail: form.email,
           patientPhone: form.phone,
+          consultType:  session,
           slotStart:    selectedSlot!.startISO,
-          slotEnd:      selectedSlot!.endISO,
         }),
       });
       const order = await res.json();
@@ -152,7 +165,7 @@ export default function BookPage() {
         amount:      order.amount,
         currency:    order.currency,
         name:        "Sukhibhava Healthcare",
-        description: `Online Consultation — ${selectedSlot!.label}`,
+        description: `${CONSULT_TYPES[session!].name} — ${selectedSlot!.label}`,
         order_id:    order.orderId,
         prefill:     { name: form.name, email: form.email, contact: form.phone },
         theme:       { color: "#2d6a4f" },
@@ -168,7 +181,7 @@ export default function BookPage() {
             }),
           });
           const result = await verifyRes.json();
-          if (result.success) { setMeetLink(result.meetLink); setStep(4); }
+          if (result.success) { setMeetLink(result.meetLink); setStep(5); }
           else setError("Payment verification failed. Contact us if charged.");
           setPaying(false);
         },
@@ -182,6 +195,7 @@ export default function BookPage() {
   }
 
   const monthGrid = getMonthGrid(currentMonth.getFullYear(), currentMonth.getMonth());
+  const consult = session ? CONSULT_TYPES[session] : null;
 
   // ── Render ──────────────────────────────────────────────────────────────────
 
@@ -217,8 +231,8 @@ export default function BookPage() {
                   </svg>
                 </div>
                 <h2 className="font-display text-xl text-ink mb-1">Online Consultation</h2>
-                <p className="text-xs text-accent font-medium mb-2">₹1,200 · 30 minutes · Google Meet</p>
-                <p className="text-sm text-ink-muted">Book a slot, pay online and receive a Google Meet link instantly.</p>
+                <p className="text-xs text-accent font-medium mb-2">From {formatINR(MIN_FEE)} · 15–45 minutes · Google Meet</p>
+                <p className="text-sm text-ink-muted">Choose your session, book a slot, pay online and receive a Google Meet link instantly.</p>
                 <p className="mt-4 text-xs text-accent font-medium">Mon, Wed & Fri only →</p>
               </button>
 
@@ -234,12 +248,8 @@ export default function BookPage() {
                   </svg>
                 </div>
                 <h2 className="font-display text-xl text-ink mb-1">In-person Consultation</h2>
-                <div className="space-y-0.5 mb-3">
-                  <p className="text-xs text-accent font-medium">First visit — ₹850</p>
-                  <p className="text-xs text-accent font-medium">Follow-up — ₹500</p>
-                  <p className="text-xs text-accent font-medium">Counselling — ₹1,500 (45 min)</p>
-                </div>
-                <p className="text-sm text-ink-muted">Walk in during OPD hours or call us to check availability.</p>
+                <p className="text-xs text-accent font-medium mb-2">At Sukhibhava Healthcare, Hubballi</p>
+                <p className="text-sm text-ink-muted">Contact the OPD directly for appointments and consultation fees.</p>
                 <p className="mt-4 text-xs text-accent font-medium">Mon–Sat, 11am–2pm & 3pm–8pm →</p>
               </button>
 
@@ -260,29 +270,12 @@ export default function BookPage() {
                   <p className="text-sm font-medium text-ink">Monday to Saturday</p>
                   <p className="text-sm text-ink-muted">11:00 AM – 2:00 PM  &  3:00 PM – 8:00 PM</p>
                 </div>
-                <div className="bg-paper rounded-xl border border-paper-warm p-4 space-y-3">
-                  <p className="text-xs uppercase tracking-widest text-ink-faint">Consultation Fees</p>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="bg-paper-white rounded-lg p-2">
-                      <p className="text-xs text-ink-muted">First visit</p>
-                      <p className="font-display text-lg text-accent">₹850</p>
-                    </div>
-                    <div className="bg-paper-white rounded-lg p-2">
-                      <p className="text-xs text-ink-muted">Follow-up</p>
-                      <p className="font-display text-lg text-accent">₹500</p>
-                    </div>
-                    <div className="bg-paper-white rounded-lg p-2">
-                      <p className="text-xs text-ink-muted">Counselling</p>
-                      <p className="font-display text-lg text-accent">₹1,500</p>
-                    </div>
-                  </div>
-                </div>
                 <div className="bg-paper rounded-xl border border-paper-warm p-4">
                   <p className="text-xs uppercase tracking-widest text-ink-faint mb-2">Address</p>
                   <p className="text-sm text-ink leading-relaxed mb-3">#17, 18, Ground Floor, Ramdhoot Apartment Complex, Opp. Sawai Gandharva Hall, Deshpande Nagar, Hubballi – 580029</p>
                   <a href="https://share.google/ozC7F3JAP8iYPZ8G5" target="_blank" rel="noopener noreferrer" className="text-sm text-accent font-medium hover:underline flex items-center gap-1">📍 Get Directions on Google Maps</a>
                 </div>
-                <p className="text-sm text-ink-muted text-center">Contact us to confirm availability before visiting</p>
+                <p className="text-sm text-ink-muted text-center">Please call or WhatsApp the OPD for appointments and consultation fees</p>
                 <div className="grid grid-cols-2 gap-3">
                   <a
                     href="tel:+918073398651"
@@ -311,26 +304,63 @@ export default function BookPage() {
           )}
 
           {/* ── Online: Step indicator ── */}
-          {consultType === "online" && step < 4 && (
+          {consultType === "online" && step < 5 && (
             <div className="flex items-center justify-center gap-2 mb-8">
-              <button onClick={() => setConsultType(null)} className="text-sm text-ink-muted mr-2 hover:text-ink">←</button>
-              {[1, 2, 3].map((s) => (
+              <button
+                onClick={() => (step === 1 ? setConsultType(null) : setStep((step - 1) as Step))}
+                className="text-sm text-ink-muted mr-2 hover:text-ink"
+              >←</button>
+              {[1, 2, 3, 4].map((s) => (
                 <div key={s} className="flex items-center gap-2">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors
                     ${step === s ? "bg-accent text-white" : step > s ? "bg-accent-light text-white" : "bg-paper-warm text-ink-faint"}`}>
                     {step > s ? "✓" : s}
                   </div>
-                  {s < 3 && <div className={`w-8 h-px ${step > s ? "bg-accent-light" : "bg-paper-warm"}`} />}
+                  {s < 4 && <div className={`w-8 h-px ${step > s ? "bg-accent-light" : "bg-paper-warm"}`} />}
                 </div>
               ))}
             </div>
           )}
 
-          {/* ── Step 1: Full Month Calendar + Slot picker ── */}
+          {/* ── Step 1: Choose session type ── */}
           {consultType === "online" && step === 1 && (
+            <div className="space-y-3">
+              <h2 className="font-display text-xl text-ink text-center mb-4">Choose your session</h2>
+              {CONSULT_TYPE_KEYS.map((key) => {
+                const t = CONSULT_TYPES[key];
+                return (
+                  <button
+                    key={key}
+                    onClick={() => chooseSession(key)}
+                    className={`w-full bg-paper-white border-2 rounded-2xl p-5 text-left transition-all hover:border-accent ${
+                      session === key ? "border-accent" : "border-paper-warm"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs uppercase tracking-widest text-ink-faint mb-1">{t.audience}</p>
+                        <h3 className="font-display text-lg text-ink">{t.name}</h3>
+                        <p className="text-sm text-ink-muted mt-1">{t.description}</p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-display text-2xl text-accent">{formatINR(t.fee)}</p>
+                        <p className="text-xs text-ink-muted">{t.minutes} min</p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+              <p className="text-xs text-ink-muted text-center pt-2">All online sessions are on Google Meet · Mon, Wed & Fri</p>
+            </div>
+          )}
+
+          {/* ── Step 2: Full Month Calendar + Slot picker ── */}
+          {consultType === "online" && step === 2 && consult && (
             <div className="bg-paper-white rounded-2xl border border-paper-warm p-6">
               <div className="mb-2">
-                <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-1">Online Consultation · ₹1,200 · 30 min</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-accent font-medium mb-1">
+                  {consult.name} · {formatINR(consult.fee)} · {consult.minutes} min
+                </p>
                 <h2 className="font-display text-xl text-ink">Select a date</h2>
                 <p className="text-sm text-ink-muted">Available Monday, Wednesday & Friday</p>
               </div>
@@ -394,36 +424,26 @@ export default function BookPage() {
                   </p>
 
                   {loadingSlots ? (
-                    <div className="space-y-3">
-                      {[1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-paper-warm animate-pulse" />)}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {[1, 2, 3].map((i) => <div key={i} className="h-14 rounded-xl bg-paper-warm animate-pulse" />)}
                     </div>
+                  ) : slots.length === 0 ? (
+                    <p className="text-sm text-ink-muted bg-paper rounded-xl border border-paper-warm p-4 text-center">
+                      No {consult.minutes}-minute slots left on this day. Please choose another date.
+                    </p>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {slots.map((slot) => (
                         <button
                           key={slot.startISO}
-                          onClick={() => slot.available && setSelectedSlot(slot)}
-                          disabled={!slot.available}
-                          className={`w-full p-4 rounded-xl border text-left transition-all ${
-                            !slot.available
-                              ? "bg-paper-warm border-paper-warm text-ink-faint cursor-not-allowed"
-                              : selectedSlot?.startISO === slot.startISO
+                          onClick={() => setSelectedSlot(slot)}
+                          className={`p-3 rounded-xl border text-sm font-medium transition-all ${
+                            selectedSlot?.startISO === slot.startISO
                               ? "bg-accent text-white border-accent"
                               : "bg-paper border-paper-warm hover:border-accent text-ink"
                           }`}
                         >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium text-sm">{slot.label}</p>
-                              <p className="text-xs opacity-70 mt-0.5">30 min · Online · Google Meet</p>
-                            </div>
-                            {!slot.available && (
-                              <span className="text-xs px-3 py-1 bg-paper-white rounded-full text-ink-faint border border-paper-warm">Booked</span>
-                            )}
-                            {slot.available && selectedSlot?.startISO === slot.startISO && (
-                              <span className="text-lg">✓</span>
-                            )}
-                          </div>
+                          {slot.label}
                         </button>
                       ))}
                     </div>
@@ -431,7 +451,7 @@ export default function BookPage() {
 
                   {selectedSlot && (
                     <button
-                      onClick={() => setStep(2)}
+                      onClick={() => setStep(3)}
                       className="mt-4 w-full bg-accent text-white py-3 rounded-full font-medium text-sm hover:bg-accent-dark transition-colors"
                     >
                       Continue — {selectedSlot.label} →
@@ -442,10 +462,10 @@ export default function BookPage() {
             </div>
           )}
 
-          {/* ── Step 2: Patient Details ── */}
-          {consultType === "online" && step === 2 && (
+          {/* ── Step 3: Patient Details ── */}
+          {consultType === "online" && step === 3 && (
             <div className="bg-paper-white rounded-2xl border border-paper-warm p-6">
-              <button onClick={() => setStep(1)} className="text-sm text-ink-muted mb-4 flex items-center gap-1 hover:text-ink">
+              <button onClick={() => setStep(2)} className="text-sm text-ink-muted mb-4 flex items-center gap-1 hover:text-ink">
                 ← {selectedSlot?.label} · {selectedDate && format(selectedDate, "EEE, d MMM")}
               </button>
               <h2 className="font-display text-xl text-ink mb-1">Your details</h2>
@@ -480,23 +500,23 @@ export default function BookPage() {
                   {formErrors.phone && <p className="text-red-500 text-xs mt-1">{formErrors.phone}</p>}
                 </div>
               </div>
-              <button onClick={() => { if (validateForm()) setStep(3); }}
+              <button onClick={() => { if (validateForm()) setStep(4); }}
                 className="mt-6 w-full bg-accent text-white py-3 rounded-full font-medium text-sm hover:bg-accent-dark transition-colors">
                 Continue to Payment →
               </button>
             </div>
           )}
 
-          {/* ── Step 3: Review + Pay ── */}
-          {consultType === "online" && step === 3 && selectedDate && selectedSlot && (
+          {/* ── Step 4: Review + Pay ── */}
+          {consultType === "online" && step === 4 && selectedDate && selectedSlot && consult && (
             <div className="bg-paper-white rounded-2xl border border-paper-warm p-6">
-              <button onClick={() => setStep(2)} className="text-sm text-ink-muted mb-4 flex items-center gap-1 hover:text-ink">← Edit details</button>
+              <button onClick={() => setStep(3)} className="text-sm text-ink-muted mb-4 flex items-center gap-1 hover:text-ink">← Edit details</button>
               <h2 className="font-display text-xl text-ink mb-6">Review & Pay</h2>
 
               <div className="bg-paper rounded-xl border border-paper-warm p-4 mb-6 space-y-3">
                 {[
                   ["Doctor",  "Dr. Sudheendra Huddar"],
-                  ["Type",    "Online Consultation"],
+                  ["Session", `${consult.name} · ${consult.minutes} min · Online`],
                   ["Date",    formatDateDisplay(selectedDate)],
                   ["Time",    `${selectedSlot.label} IST`],
                   ["Patient", form.name],
@@ -509,20 +529,20 @@ export default function BookPage() {
                 ))}
                 <div className="border-t border-paper-warm pt-3 flex justify-between">
                   <span className="font-medium text-ink">Total</span>
-                  <span className="font-display text-xl text-accent">₹1,200</span>
+                  <span className="font-display text-xl text-accent">{formatINR(consult.fee)}</span>
                 </div>
               </div>
 
               <p className="text-xs text-ink-muted mb-4 text-center">🔒 Secure payment via Razorpay · UPI / Cards / Net Banking</p>
               <button onClick={handlePayment} disabled={paying}
                 className="w-full bg-accent text-white py-3.5 rounded-full font-medium text-sm hover:bg-accent-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-                {paying ? "Processing..." : "Pay ₹1,200 & Confirm Booking"}
+                {paying ? "Processing..." : `Pay ${formatINR(consult.fee)} & Confirm Booking`}
               </button>
             </div>
           )}
 
-          {/* ── Step 4: Confirmation ── */}
-          {consultType === "online" && step === 4 && selectedDate && selectedSlot && (
+          {/* ── Step 5: Confirmation ── */}
+          {consultType === "online" && step === 5 && selectedDate && selectedSlot && consult && (
             <div className="bg-paper-white rounded-2xl border border-paper-warm overflow-hidden">
               <div className="bg-accent px-6 py-8 text-center">
                 <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">✓</div>
@@ -543,8 +563,12 @@ export default function BookPage() {
                     <span className="text-ink">{form.name}</span>
                   </div>
                   <div className="flex justify-between text-sm">
+                    <span className="text-ink-muted">Session</span>
+                    <span className="text-ink">{consult.name} · {consult.minutes} min</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
                     <span className="text-ink-muted">Amount Paid</span>
-                    <span className="text-ink font-medium">₹1,200</span>
+                    <span className="text-ink font-medium">{formatINR(consult.fee)}</span>
                   </div>
                   {bookingId && (
                     <div className="flex justify-between text-sm">
