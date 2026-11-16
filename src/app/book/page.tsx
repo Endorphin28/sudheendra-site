@@ -15,7 +15,6 @@ import {
 const TZ = "Asia/Kolkata";
 const ALLOWED_DAYS = [1, 3, 5]; // Mon, Wed, Fri
 const DAY_HEADERS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const MIN_FEE = Math.min(...CONSULT_TYPE_KEYS.map((k) => CONSULT_TYPES[k].fee));
 
 type ConsultType = "online" | "inperson" | null;
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -231,7 +230,7 @@ export default function BookPage() {
                   </svg>
                 </div>
                 <h2 className="font-display text-xl text-ink mb-1">Online Consultation</h2>
-                <p className="text-xs text-accent font-medium mb-2">From {formatINR(MIN_FEE)} · 15–45 minutes · Google Meet</p>
+                <p className="text-xs text-accent font-medium mb-2">Video consultation · Google Meet</p>
                 <p className="text-sm text-ink-muted">Choose your session, book a slot, pay online and receive a Google Meet link instantly.</p>
                 <p className="mt-4 text-xs text-accent font-medium">Mon, Wed & Fri only →</p>
               </button>
